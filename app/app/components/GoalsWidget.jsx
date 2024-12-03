@@ -3,7 +3,6 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Typography,
   Box,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -14,11 +13,13 @@ import {
   Stack,
   useTheme, // Import useTheme hook to access theme
 } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import ClearIcon from "@mui/icons-material/Clear";
+import ConformationModal from "./ConfirmationModal";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useBookshelf } from "../contexts/BooksReadCountContext";
 import { useGoal } from "../contexts/GoalContext";
 import Progress from "./Progress";
+import Button from "./Button";
 
 export default function GoalsWidget() {
   const {
@@ -35,6 +36,7 @@ export default function GoalsWidget() {
 
   const { booksCount } = useBookshelf();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [goalData, setGoalData] = useState({
     goal_type: activeGoal?.goal_type || "MONTHLY",
@@ -126,7 +128,15 @@ export default function GoalsWidget() {
   }
 
   return (
-    <Box sx={{ width: "100%", p: 2 }}>
+    <Box
+      sx={{
+        width: "100%",
+        p: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <Typography
         variant="h6"
         gutterBottom
@@ -145,12 +155,13 @@ export default function GoalsWidget() {
             color: theme.palette.mode === "dark" ? "#000" : "text.secondary", // Check dark mode
           }}
         >
-          <Typography>No active reading goal</Typography>
+          <Typography sx={{ mb: 3 }}>No active reading goal</Typography>
           <Button
-            variant="contained"
+            variant="primary"
             size="small"
             onClick={() => setIsModalOpen(true)}
             sx={{
+              mt: 2,
               color: theme.palette.mode === "dark" ? "#fff" : "#000", // Text color: black in light mode, white in dark mode
               backgroundColor:
                 theme.palette.mode === "dark" ? "#333" : "#cfc0c0", // Background color: #cfc0c0 in light mode, dark in dark mode
@@ -192,7 +203,7 @@ export default function GoalsWidget() {
                     : theme.palette.text.secondary,
               }}
             >
-              Started:{" "}
+              Started:
               {new Date(activeGoal.start_date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -218,7 +229,7 @@ export default function GoalsWidget() {
             sx={{ display: "flex", gap: 2, mt: 2, justifyContent: "center" }}
           >
             <Button
-              variant="contained"
+              variant="primary"
               size="small"
               onClick={() => setIsModalOpen(true)}
               sx={{
@@ -238,7 +249,7 @@ export default function GoalsWidget() {
             </Button>
             <IconButton
               color="primary"
-              onClick={handleResetGoal}
+              onClick={() => setIsConfirmationModalOpen(true)}
               sx={{
                 backgroundColor: (theme) =>
                   theme.palette.mode === "dark" ? "#333" : "#f0f0f0", // Background color adjustment
@@ -252,8 +263,19 @@ export default function GoalsWidget() {
                 },
               }}
             >
-              <RefreshIcon />
+              <ClearIcon />
             </IconButton>
+            <ConformationModal
+              isOpen={isConfirmationModalOpen}
+              onClose={() => setIsConfirmationModalOpen(false)}
+              onConfirm={() => {
+                handleResetGoal();
+                setIsConfirmationModalOpen(false);
+              }}
+              message="Are you sure you want to clear the goal?"
+              confirmText="Yes, Clear"
+              cancelText="Cancel"
+            />
           </Box>
         </Box>
       )}
@@ -322,10 +344,9 @@ export default function GoalsWidget() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button
               type="submit"
-              variant="contained"
+              variant="primary"
               disabled={
                 isSubmitting || !goalData.goal_count || !goalData.start_date
               }
@@ -337,6 +358,9 @@ export default function GoalsWidget() {
                 : activeGoal
                 ? "Update Goal"
                 : "Set Goal"}
+            </Button>
+            <Button onClick={() => setIsModalOpen(false)} variant="secondary">
+              Cancel
             </Button>
           </DialogActions>
         </form>

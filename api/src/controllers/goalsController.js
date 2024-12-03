@@ -132,7 +132,7 @@ export const getLatestGoal = async (req, res) => {
       .first();
 
     if (!latestGoal) {
-      return res.status(404).json({ goal: null });
+      return res.status(200).json({ goal: null });
     }
 
     res.status(200).json({ goal: buildGoalDto(latestGoal) });
