@@ -11,17 +11,28 @@ export const makeRequest = async (endpoint, userData = {}, method = "POST") => {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: method !== "GET" ? JSON.stringify(userData) : undefined,
+      body:
+        method !== "GET" && Object.keys(userData).length > 0
+          ? JSON.stringify(userData)
+          : undefined,
     });
 
     if (response.status === 204) {
       return null;
     }
 
-    const result = await response.json();
+    const result =
+      response.headers.get("Content-Length") > 0 ? await response.json() : null;
 
     if (!response.ok) {
-      throw new Error(result.error || "Something went wrong");
+      console.error("Request failed:", {
+        endpoint,
+        method,
+        status: response.status,
+        userData,
+        responseText: await response.text(),
+      });
+      throw new Error(result?.error || "Something went wrong");
     }
 
     return result;

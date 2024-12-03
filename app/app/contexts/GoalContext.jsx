@@ -20,20 +20,13 @@ export const GoalProvider = ({ children }) => {
       try {
         const response = await makeRequest(`/api/goals/latest`, {}, "GET");
 
-        if (response && response.goal) {
+        if (response?.goal) {
           setActiveGoal(response.goal);
         } else {
           setActiveGoal(null);
         }
       } catch (error) {
         console.error("Error fetching goal:", error);
-        if (error.response) {
-          console.error("API Response Error:", error.response);
-        } else if (error.request) {
-          console.error("API Request Error:", error.request);
-        } else {
-          console.error("Error Message:", error.message);
-        }
         setActiveGoal(null);
       }
     };
@@ -59,11 +52,9 @@ export const GoalProvider = ({ children }) => {
 
     try {
       if (activeGoal) {
-        // If there's an active goal, update it instead of creating a new one
         await updateGoal(goalData);
         return;
       } else {
-        // If there's no active goal, create a new one
         const startDate = new Date(goalData.start_date || new Date());
         let endDate;
 
