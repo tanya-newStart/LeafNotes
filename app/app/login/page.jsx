@@ -138,7 +138,7 @@ const Login = () => {
                 color: theme === "dark" ? "#ffffff" : "#5A4A42",
               }}
             >
-              Welcome to LeafNotes
+              Welcome to Leaf Notes
             </Typography>
             <Typography
               variant="body1"
