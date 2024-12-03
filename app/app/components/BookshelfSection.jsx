@@ -108,10 +108,6 @@ const BookshelfSection = ({
                       className={styles.statusButton}
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log(
-                          "Clicking Mark as Read for book:",
-                          book.book_id
-                        ); // Debug log
                         onUpdateReadingStatus(book.book_id, "READ");
                       }}
                     >
