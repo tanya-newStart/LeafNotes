@@ -14,7 +14,8 @@ import {
   Stack,
   useTheme, // Import useTheme hook to access theme
 } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import ClearIcon from "@mui/icons-material/Clear";
+import ConformationModal from "./ConfirmationModal";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useBookshelf } from "../contexts/BooksReadCountContext";
 import { useGoal } from "../contexts/GoalContext";
@@ -35,6 +36,7 @@ export default function GoalsWidget() {
 
   const { booksCount } = useBookshelf();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [goalData, setGoalData] = useState({
     goal_type: activeGoal?.goal_type || "MONTHLY",
@@ -238,7 +240,7 @@ export default function GoalsWidget() {
             </Button>
             <IconButton
               color="primary"
-              onClick={handleResetGoal}
+              onClick={() => setIsConfirmationModalOpen(true)}
               sx={{
                 backgroundColor: (theme) =>
                   theme.palette.mode === "dark" ? "#333" : "#f0f0f0", // Background color adjustment
@@ -252,8 +254,19 @@ export default function GoalsWidget() {
                 },
               }}
             >
-              <RefreshIcon />
+              <ClearIcon />
             </IconButton>
+            <ConformationModal
+              isOpen={isConfirmationModalOpen}
+              onClose={() => setIsConfirmationModalOpen(false)}
+              onConfirm={() => {
+                handleResetGoal();
+                setIsConfirmationModalOpen(false);
+              }}
+              message="Are you sure you want to clear the goal?"
+              confirmText="Yes, Clear"
+              cancelText="Cancel"
+            />
           </Box>
         </Box>
       )}
